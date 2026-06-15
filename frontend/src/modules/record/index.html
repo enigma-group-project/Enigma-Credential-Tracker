@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Record Creation · Enigma-Credential-Tracker</title>
+<link rel="stylesheet" href="../../shared/layout.css"/></head>
+<body>
+<header class="enigma-header">
+  <h1>2 · Record Creation <span class="owner">member2</span></h1>
+  <p class="scenario">A Registrar issues a Credential: store its hash + IPFS CID on-chain.</p>
+  <label class="netrow">Network: <select id="net" class="net"></select></label>
+</header>
+<main><div class="card">
+  <button id="connect">Connect wallet (Registrar)</button>
+  <p id="who" class="muted"></p>
+  <h3>Credential details</h3>
+  <input id="key" placeholder="credential id (natural key)"/>
+  <input id="artifact" placeholder="diploma text (stands in for the PDF to hash)"/>
+  <input id="cid" placeholder="IPFS CID of the diploma PDF"/>
+  <input id="owner" placeholder="0x… graduate (owner)"/>
+  <input id="meta" placeholder="ipfs://… record.json"/>
+  <button id="create">Create record</button>
+  <pre id="out" class="out"></pre>
+</div></main>
+<script type="module" src="record.js"></script>
+</body></html>
