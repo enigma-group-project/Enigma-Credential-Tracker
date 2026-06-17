@@ -3,7 +3,7 @@
 > 🧩 **STUDENT TEMPLATE.** Every `TODO(memberN)` in `contracts/` and `frontend/src/modules/` is yours to implement. The tests in `test/` are the spec — run `forge test` until green. The Auto-Grade Action scores each push. See [STUDENT_GUIDE](../../STUDENT_GUIDE.md).
 
 > Team Enigma (Group E) · CS-GY 9215 Applied Blockchain · **Scenario:** Diploma and certificate verification: an employer verifies a credential in seconds without contacting the registrar, while the issuer keeps the power to revoke.
-> One of six fully-functional reference solutions sharing the four-slice attestation architecture (domain-specific functions per scenario) — see [`../../PROJECT_BRIEF.md`](../../PROJECT_BRIEF.md).
+> One of six fully-functional reference solutions sharing the four-slice attestation architecture (domain-specific functions per scenario).
 > **Status:** Replicated from the gold reference (Vehicle-Emission). All four slices on the dual-network standard (Anvil + Sepolia).
 
 
