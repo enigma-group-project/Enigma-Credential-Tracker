@@ -3,56 +3,56 @@ pragma solidity 0.8.20;
 
 import {IAttestationRegistry} from "./interfaces/IAttestationRegistry.sol";
 import {IssuerRegistry} from "./IssuerRegistry.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 
-/// @title RecordRegistry — Slice 2 (CredentialIssued  + state)  [STUDENT TEMPLATE]
-/// @notice Implement every TODO(member2). Spec: docs/record-module.md + test/RecordRegistry.t.sol.
-contract RecordRegistry is IAttestationRegistry {
+/// @title RecordRegistry — Slice 2 (Credential issuance)  [STUDENT TEMPLATE]
+/// @notice Implement TODO(member2) (issueCredential). Infra (setController/pause/getRecord/controller*) is provided.
+contract RecordRegistry is IAttestationRegistry, ReentrancyGuard, Pausable {
     IssuerRegistry public immutable issuers;
     address public controller;
     mapping(bytes32 => Attestation) internal records;
-    bool private _locked;
 
     error NotInstitution();
-    error NotController();
     error NotRegistrar();
+    error NotController();
     error AlreadyExists();
     error Missing();
-    error Reentrancy();
     error ControllerSet();
 
-    modifier nonReentrant() { if (_locked) revert Reentrancy(); _locked = true; _; _locked = false; }
     modifier onlyInstitution() { if (!issuers.isInstitution(msg.sender)) revert NotInstitution(); _; }
+    modifier onlyRegistrar() { if (msg.sender != issuers.registrar()) revert NotRegistrar(); _; }
     modifier onlyController() { if (msg.sender != controller) revert NotController(); _; }
 
     constructor(address issuerRegistry) { issuers = IssuerRegistry(issuerRegistry); }
 
-    /// @notice One-time link to the AuditTrail controller (registrar only).
-    function setController(address controller_) external {
-        // TODO(member2): require msg.sender == issuers.registrar() (else NotRegistrar), require controller unset
-        //               (else ControllerSet), then controller = controller_;
-        revert("TODO(member2): implement setController");
+    function setController(address controller_) external onlyRegistrar {
+        if (controller != address(0)) revert ControllerSet();
+        controller = controller_;
     }
+    function pause() external onlyRegistrar { _pause(); }
+    function unpause() external onlyRegistrar { _unpause(); }
 
-    /// @notice Create a record. onlyInstitution + nonReentrant. Reject duplicate id (AlreadyExists). Emit CredentialIssued.
-    function issueCredential(bytes32 id, bytes32 dataHash, string calldata cid, address owner_, string calldata metadataURI)
-        external onlyInstitution nonReentrant
-    {
-        // TODO(member2): if records[id].status != Status.None revert AlreadyExists();
-        //               write the Attestation (status Active, issuedAt = block.timestamp); emit CredentialIssued.
+    function issueCredential(
+        bytes32 id, bytes32 dataHash, string calldata cid, address owner_, string calldata metadataURI
+    ) external onlyInstitution whenNotPaused nonReentrant {
+        // TODO(member2): if (records[id].status != Status.None) revert AlreadyExists();
+        //               store Attestation (Active, issuedAt=block.timestamp); emit CredentialIssued(...).
         revert("TODO(member2): implement issueCredential");
     }
 
+    // Controller-only mutators (infra used by AuditTrail / member4)
     function controllerTransfer(bytes32 id, address newOwner) external onlyController {
-        // TODO(member4 calls this via AuditTrail): update owner; emit OwnerTransferred.
-        revert("TODO: implement controllerTransfer");
+        Attestation storage a = records[id]; if (a.status == Status.None) revert Missing();
+        address from = a.owner; a.owner = newOwner; emit OwnerTransferred(id, from, newOwner);
     }
     function controllerRevoke(bytes32 id, address by) external onlyController {
-        // TODO: set status = Revoked; emit RecordRevoked(id, by).
-        revert("TODO: implement controllerRevoke");
+        Attestation storage a = records[id]; if (a.status == Status.None) revert Missing();
+        a.status = Status.Revoked; emit RecordRevoked(id, by);
     }
     function controllerUpdate(bytes32 id, bytes32 newHash, string calldata newCid) external onlyController {
-        // TODO: set new hash/cid, status = Superseded; emit RecordUpdated.
-        revert("TODO: implement controllerUpdate");
+        Attestation storage a = records[id]; if (a.status == Status.None) revert Missing();
+        a.dataHash = newHash; a.cid = newCid; a.status = Status.Superseded; emit RecordUpdated(id, newHash, newCid);
     }
 
     function getRecord(bytes32 id) external view returns (Attestation memory) { return records[id]; }

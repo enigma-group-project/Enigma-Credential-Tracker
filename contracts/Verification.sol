@@ -4,7 +4,7 @@ pragma solidity 0.8.20;
 import {IAttestationRegistry} from "./interfaces/IAttestationRegistry.sol";
 
 /// @title Verification — Slice 3 (view-only)  [STUDENT TEMPLATE]
-/// @notice Implement every TODO(member3). Spec: docs/verification-module.md + test/Verification.t.sol.
+/// @notice Implement every TODO(member3). Spec: test/Verification.t.sol.
 contract Verification {
     IAttestationRegistry public immutable registry;
     constructor(address recordRegistry) { registry = IAttestationRegistry(recordRegistry); }
@@ -21,11 +21,10 @@ contract Verification {
         // TODO(member3): return registry.getRecord(id).dataHash == candidateHash;
         return false;
     }
-    /// @notice One-call verification for the frontend.
     function verifyCredential(bytes32 id, bytes32 candidateHash)
         external view returns (bool valid, IAttestationRegistry.Status status, address owner, address issuer)
     {
-        // TODO(member3): read the Attestation; valid = hash matches AND status == Active; return the tuple.
+        // TODO(member3): read the Attestation; valid = hash matches AND status==Active; return tuple.
         return (false, IAttestationRegistry.Status.None, address(0), address(0));
     }
 }

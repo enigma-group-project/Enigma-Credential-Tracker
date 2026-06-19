@@ -3,10 +3,11 @@ pragma solidity 0.8.20;
 
 import {IAttestationRegistry} from "./interfaces/IAttestationRegistry.sol";
 import {RecordRegistry} from "./RecordRegistry.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-/// @title AuditTrail — Slice 4 (Transfer / Revocation / Audit)  [STUDENT TEMPLATE]
-/// @notice Implement every TODO(member4). Spec: docs/audit-module.md + test/AuditTrail.t.sol.
-contract AuditTrail {
+/// @title AuditTrail — Slice 4 (Transfer / Revocation / Renewal / Audit)  [STUDENT TEMPLATE]
+/// @notice Implement every TODO(member4). Spec: test/AuditTrail.t.sol.
+contract AuditTrail is ReentrancyGuard {
     RecordRegistry public immutable registry;
 
     event HolderTransferred(bytes32 indexed id, address indexed from, address indexed to, uint64 at);
@@ -20,24 +21,20 @@ contract AuditTrail {
 
     constructor(address recordRegistry) { registry = RecordRegistry(recordRegistry); }
 
-    /// @notice Current owner transfers the record to a new owner.
-    function transferHolder(bytes32 id, address newOwner) external {
-        // TODO(member4): read record; require it exists (else Missing) and msg.sender == owner (else NotOwner);
-        //               registry.controllerTransfer(id, newOwner); emit HolderTransferred.
+    function transferHolder(bytes32 id, address newOwner) external nonReentrant {
+        // TODO(member4): read record; require exists (Missing) + msg.sender==owner (NotOwner);
+        //               registry.controllerTransfer(id,newOwner); emit HolderTransferred.
         revert("TODO(member4): implement transferHolder");
     }
-    /// @notice Issuer or registrar revokes the record.
-    function revokeCredential(bytes32 id, string calldata reason) external {
-        // TODO(member4): require exists; require msg.sender == issuer || registry.issuers().registrar();
-        //               registry.controllerRevoke(id, msg.sender); emit Revoked.
-        revert("TODO(member4): implement revoke");
+    function revokeCredential(bytes32 id, string calldata reason) external nonReentrant {
+        // TODO(member4): require exists; require issuer or registry.issuers().registrar() (NotInstitutionOrRegistrar);
+        //               registry.controllerRevoke(id,msg.sender); emit CredentialRevoked.
+        revert("TODO(member4): implement revokeCredential");
     }
-    /// @notice Issuer supersedes the record with a new hash/CID.
-    function renewCredential(bytes32 id, bytes32 newHash, string calldata newCid) external {
-        // TODO(member4): same authz as revoke; registry.controllerUpdate(...); emit Updated.
-        revert("TODO(member4): implement update");
+    function renewCredential(bytes32 id, bytes32 newHash, string calldata newCid) external nonReentrant {
+        // TODO(member4): same authz; registry.controllerUpdate(...); emit CredentialRenewed.
+        revert("TODO(member4): implement renewCredential");
     }
-    /// @notice Anyone can drop a checkpoint into the audit log.
     function logCredentialEvent(bytes32 id, string calldata note) external {
         // TODO(member4): emit CredentialEventLogged(id, msg.sender, note, uint64(block.timestamp));
         revert("TODO(member4): implement logCredentialEvent");
